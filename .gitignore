@@ -1,0 +1,16 @@
+output/
+reports/
+processed_builds.txt
+app_include_list.txt
+*.log
+
+.tox/
+build/
+dist/
+.cache/
+*.egg-info/
+.python-version
+*.pyc
+.DS_Store
+.idea/
+.travis.yml
