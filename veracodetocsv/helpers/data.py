@@ -1,16 +1,13 @@
 # Purpose:  Convert Veracode XML elements to Python objects.
 
 import sys
-import os
-import errno
-import logging
 import xml.etree.ElementTree as ETree
 try:
     from StringIO import StringIO
 except ImportError:
     from io import BytesIO
 import pytz
-from datetime import datetime
+from dateutil import parser
 
 from helpers import models
 from helpers.exceptions import VeracodeError, VeracodeAPIError
@@ -87,18 +84,13 @@ class DataLoader:
 
         build_list_root_element = parse_and_remove_xml_namespaces(build_list_xml)
         build_elements = build_list_root_element.findall("build")
-        # Filter out incomplete builds
-        # build_elements = [build_element for build_element in build_elements if "policy_updated_date" in build_element.attrib]
 
         builds = []
         for build_element in build_elements:
-            # policy_updated_date_string = build_element.attrib["policy_updated_date"][:22] + build_element.attrib["policy_updated_date"][23:]
-            # policy_updated_date = datetime.strptime(policy_updated_date_string, "%Y-%m-%dT%H:%M:%S%z").astimezone(pytz.utc)
             if sandbox_id is None:
                 policy_updated_date_string = build_element.attrib["policy_updated_date"][:22] + \
                                              build_element.attrib["policy_updated_date"][23:]
-                policy_updated_date = datetime.strptime(policy_updated_date_string,
-                                                        "%Y-%m-%dT%H:%M:%S%z").astimezone(pytz.utc)
+                policy_updated_date = parser.parse(policy_updated_date_string).astimezone(pytz.utc)
             else:
                 policy_updated_date = None
 
@@ -136,7 +128,7 @@ class DataLoader:
 
         flaws = []
         for flaw_element in flaw_elements:
-            date_first_occurrence = datetime.strptime(flaw_element.attrib["date_first_occurrence"], "%Y-%m-%d %H:%M:%S %Z").astimezone(pytz.utc)
+            date_first_occurrence = parser.parse(flaw_element.attrib["date_first_occurrence"]).astimezone(pytz.utc)
             if build_type == "static":
                 flaws.append(models.StaticFlaw(flaw_element.attrib["issueid"], date_first_occurrence,
                                                flaw_element.attrib["severity"], flaw_element.attrib["cweid"],
@@ -176,7 +168,7 @@ class DataLoader:
                 analysis_unit_attrib = self._get_build_info(app.id, build.id).find("analysis_unit").attrib
                 if "published_date" in analysis_unit_attrib:
                     published_date_string = analysis_unit_attrib["published_date"][:22] + analysis_unit_attrib["published_date"][23:]
-                    build.published_date = datetime.strptime(published_date_string, "%Y-%m-%dT%H:%M:%S%z").astimezone(pytz.utc)
+                    build.published_date = parser.parse(published_date_string).astimezone(pytz.utc)
                     build.policy_updated_date = build.published_date
                 if build.type == "static":
                     build.flaws, build.analysis_size_bytes = self._get_flaws(build.id, build.type)
@@ -191,7 +183,7 @@ class DataLoader:
                         analysis_unit_attrib = self._get_build_info(app.id, build.id, sandbox.id).find("analysis_unit").attrib
                         if "published_date" in analysis_unit_attrib:
                             published_date_string = analysis_unit_attrib["published_date"][:22] + analysis_unit_attrib["published_date"][23:]
-                            build.published_date = datetime.strptime(published_date_string, "%Y-%m-%dT%H:%M:%S%z").astimezone(pytz.utc)
+                            build.published_date = parser.parse(published_date_string).astimezone(pytz.utc)
                         build.flaws, build.analysis_size_bytes = self._get_flaws(build.id, build.type)
 
         return apps
