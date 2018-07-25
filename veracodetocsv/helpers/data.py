@@ -88,9 +88,14 @@ class DataLoader:
         builds = []
         for build_element in build_elements:
             if sandbox_id is None:
-                policy_updated_date_string = build_element.attrib["policy_updated_date"][:22] + \
-                                             build_element.attrib["policy_updated_date"][23:]
-                policy_updated_date = parser.parse(policy_updated_date_string).astimezone(pytz.utc)
+                if "policy_updated_date" in build_element.attrib:
+                    policy_updated_date_string = build_element.attrib["policy_updated_date"][:22] + \
+                                                 build_element.attrib["policy_updated_date"][23:]
+                    policy_updated_date = parser.parse(policy_updated_date_string).astimezone(pytz.utc)
+                else:
+                    # In this case, it's a build that hasn't completed yet, as it's not a sandbox so should have a
+                    # policy updated date
+                    continue
             else:
                 policy_updated_date = None
 
