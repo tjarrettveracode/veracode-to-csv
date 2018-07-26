@@ -4,7 +4,7 @@ import json
 import errno
 import logging
 import pytz
-from datetime import datetime
+from dateutil import parser
 
 from helpers.exceptions import VeracodeError
 
@@ -32,7 +32,7 @@ class BuildTools:
             try:
                 last_build_policy_updated_string = self.processed_builds[app_id][build_id]["policy_updated_date"][:22]\
                                                    + self.processed_builds[app_id][build_id]["policy_updated_date"][23:]
-                last_build_policy_updated_date = datetime.strptime(last_build_policy_updated_string, "%Y-%m-%d %H:%M:%S%z").astimezone(pytz.utc)
+                last_build_policy_updated_date = parser.parse(last_build_policy_updated_string).astimezone(pytz.utc)
             except ValueError as e:
                 logging.exception("Error parsing date")
                 raise VeracodeError(e)
