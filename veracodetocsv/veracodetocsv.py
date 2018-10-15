@@ -58,7 +58,9 @@ def main():
     logging.log(logging.INFO, "Starting data download")
     print("Starting data download")
 
-    if not os.path.exists(output_directory):
+    if not (os.path.exists(output_directory) and
+            os.path.exists(os.path.join(output_directory, "static")) and
+            os.path.exists(os.path.join(output_directory, "dynamic"))):
         try:
             os.makedirs(os.path.join(output_directory, "static"))
             os.makedirs(os.path.join(output_directory, "dynamic"))
@@ -144,8 +146,12 @@ def main():
     print("Processed {} builds".format(builds_processed))
 
 
-if __name__ == "__main__":
+def run():
     try:
         main()
     except KeyboardInterrupt:
         print("\r\nExiting")
+
+
+if __name__ == "__main__":
+    run()

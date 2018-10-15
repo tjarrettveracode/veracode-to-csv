@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="veracodetocsv",
-    version="2018.10.1",
+    version="2018.10.3",
     packages=find_packages(),
     license="MIT",
     author="ctcampbell",
@@ -15,6 +15,6 @@ setup(
         "python-dateutil >= 2.7.3"
     ],
     entry_points={
-        "console_scripts": ["veracodetocsv = veracodetocsv.veracodetocsv:main"]
+        "console_scripts": ["veracodetocsv = veracodetocsv.veracodetocsv:run"]
     }
 )
