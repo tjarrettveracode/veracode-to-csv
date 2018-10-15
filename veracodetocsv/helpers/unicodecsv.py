@@ -10,7 +10,7 @@ import codecs
 import csv
 import logging
 
-from helpers.exceptions import VeracodeError
+from veracodetocsv.helpers.exceptions import VeracodeError
 
 
 class UnicodeWriter:

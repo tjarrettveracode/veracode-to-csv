@@ -4,13 +4,9 @@ This is not an official Veracode project. The Veracode support team will not be 
 
 # Install
 
-Download latest release from [releases/latest](https://github.com/ctcampbell/veracode-to-csv/releases/latest)
+`pip install veracodetocsv`
 
 Supports Python 2.7 and 3.6+
-
-Install Veracode module veracode-api-signing (speak to your Veracode Solution Architect for this file)
-
-    pip install veracode_api_signing-17.0.0-py2.py3-none-any.whl
 
 API credentials must be enabled on a Veracode account and placed in `~/.veracode/credentials`
 
@@ -22,23 +18,19 @@ File permissions should be set appropriately
 
     chmod 600 ~/.veracode/credentials
 
-Install other dependencies
-
-    pip install -r requirements.txt
-
 # Configure
 
-Configuration is done in config.py
+An example configuration file `config.py` which can be passed on the command line using `-c`. defaults are as shown:
 
     # Logging
-    debug_logging = True
+    # debug_logging = True
     
     # Directory to output .csv files
     output_directory = "output"
     
     # UTF-8 encoded text file containing list of application profile names to include.
     # Note - an empty file will include all application profiles
-    app_include_list = "app_include_list.txt"
+    # app_include_list = "app_include_list.txt"
     
     # Include static/dynamic flaws
     include_static_flaws = True
@@ -51,11 +43,11 @@ Configuration is done in config.py
     include_csv_headers = True
     
     # Proxy configuration, see http://docs.python-requests.org/en/master/user/advanced/#proxies for options
-    proxies = {"https": "http://user:pass@10.10.10.10:8080/"}
+    # proxies = {"https": "http://user:pass@10.10.10.10:8080/"}
 
 # Run
 
-    python veracodetocsv/veracodetocsv.py
+    veracodetocsv [-c </path/to/config.py>]
     
 A text file `processed_builds.txt` keeps track of which builds have been successfully processed. Delete this file to regenerate all CSVs.
 

@@ -9,8 +9,8 @@ except ImportError:
 import pytz
 from dateutil import parser
 
-from helpers import models
-from helpers.exceptions import VeracodeError, VeracodeAPIError
+from veracodetocsv.helpers import models
+from veracodetocsv.helpers.exceptions import VeracodeError, VeracodeAPIError
 
 
 def parse_and_remove_xml_namespaces(xml_string):

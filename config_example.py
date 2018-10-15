@@ -1,7 +1,7 @@
 # Purpose:  Config file for veracodetocsv.py
 
 # Logging
-# debug_logging = True
+debug_logging = True
 
 # Directory to output .csv files
 output_directory = "output"

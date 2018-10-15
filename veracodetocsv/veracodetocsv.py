@@ -3,23 +3,48 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
+try:
+    import importlib.util
+except ImportError:
+    import imp
+
 import os
 import re
 import sys
 import codecs
+import argparse
 import logging
 from datetime import datetime
 
-import config
-from helpers import log
-from helpers import api
-from helpers import unicodecsv
-from helpers.data import DataLoader
-from helpers.build import BuildTools
-from helpers.exceptions import VeracodeError
+from veracodetocsv.helpers import log
+from veracodetocsv.helpers import api
+from veracodetocsv.helpers import unicodecsv
+from veracodetocsv.helpers.data import DataLoader
+from veracodetocsv.helpers.build import BuildTools
+from veracodetocsv.helpers.exceptions import VeracodeError
+
+
+class EmptyConfig(object):
+    def __getattr__(self, name):
+        raise AttributeError(name)
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Outputs one CSV file per scan per application profile visible in a Veracode platform account")
+    parser.add_argument("-c", "--config", help="Configuration file", type=str)
+    args = parser.parse_args()
+
+    if args.config:
+        if sys.version_info >= (3, 5):
+            spec = importlib.util.spec_from_file_location("config", args.config)
+            config = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(config)
+        else:
+            config = imp.load_source("config", args.config)
+    else:
+        config = EmptyConfig()
+
     include_static_builds = getattr(config, "include_static_flaws", True)
     include_dynamic_builds = getattr(config, "include_dynamic_flaws", True)
     include_sandboxes = getattr(config, "include_sandboxes", True)
@@ -120,4 +145,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\r\nExiting")

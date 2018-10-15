@@ -6,7 +6,7 @@ import logging
 import pytz
 from dateutil import parser
 
-from helpers.exceptions import VeracodeError
+from veracodetocsv.helpers.exceptions import VeracodeError
 
 
 class BuildTools:
