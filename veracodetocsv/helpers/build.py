@@ -28,6 +28,8 @@ class BuildTools:
     def build_should_be_processed(self, app_id, build_id, build_policy_updated_date):
         if app_id not in self.processed_builds or build_id not in self.processed_builds[app_id]:
             return True
+        elif self.processed_builds[app_id][build_id]["policy_updated_date"] in [None, "None"]:
+            return False
         else:
             try:
                 last_build_policy_updated_string = self.processed_builds[app_id][build_id]["policy_updated_date"][:22]\
@@ -40,7 +42,8 @@ class BuildTools:
                 return build_policy_updated_date.astimezone(pytz.utc) > last_build_policy_updated_date
 
     def update_and_save_processed_builds_file(self, app_id, build_id, build_policy_updated_date):
-        build_data = {"policy_updated_date": str(build_policy_updated_date)}
+        build_policy_updated_date_string = str(build_policy_updated_date) if build_policy_updated_date is not None else None
+        build_data = {"policy_updated_date": build_policy_updated_date_string}
         if app_id not in self.processed_builds:
             self.processed_builds[app_id] = {build_id: build_data}
         else:

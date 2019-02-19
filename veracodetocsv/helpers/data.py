@@ -93,8 +93,8 @@ class DataLoader:
                                                  build_element.attrib["policy_updated_date"][23:]
                     policy_updated_date = parser.parse(policy_updated_date_string).astimezone(pytz.utc)
                 else:
-                    # In this case, it's a build that hasn't completed yet, as it's not a sandbox so should have a
-                    # policy updated date
+                    # In this case it's a build that hasn't completed yet, as it's not a sandbox and should have a
+                    # policy updated date if the build has been published.
                     continue
             else:
                 policy_updated_date = None
@@ -174,7 +174,6 @@ class DataLoader:
                 if "published_date" in analysis_unit_attrib:
                     published_date_string = analysis_unit_attrib["published_date"][:22] + analysis_unit_attrib["published_date"][23:]
                     build.published_date = parser.parse(published_date_string).astimezone(pytz.utc)
-                    build.policy_updated_date = build.published_date
                 if build.type == "static":
                     build.flaws, build.analysis_size_bytes = self._get_flaws(build.id, build.type)
                 else:
@@ -183,7 +182,8 @@ class DataLoader:
             if include_sandboxes:
                 app.sandboxes = self._get_sandboxes(app.id)
                 for sandbox in app.sandboxes:
-                    sandbox.builds = self._get_builds(app.id, include_static_builds, include_dynamic_builds, sandbox.id)
+                    builds = self._get_builds(app.id, include_static_builds, include_dynamic_builds, sandbox.id)
+                    sandbox.builds = [build for build in builds if self.build_tools.build_should_be_processed(app.id, build.id, build.policy_updated_date)]
                     for build in sandbox.builds:
                         analysis_unit_attrib = self._get_build_info(app.id, build.id, sandbox.id).find("analysis_unit").attrib
                         if "published_date" in analysis_unit_attrib:

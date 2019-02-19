@@ -32,7 +32,9 @@ class EmptyConfig(object):
 def main():
     parser = argparse.ArgumentParser(
         description="Outputs one CSV file per scan per application profile visible in a Veracode platform account")
-    parser.add_argument("-c", "--config", help="Configuration file", type=str)
+    parser.add_argument("-c", "--config", help="Configuration file")
+    parser.add_argument("-o", "--outputdir", help="Output directory")
+    parser.add_argument("-d", "--debug", help="Enable debug logging", action="store_true")
     args = parser.parse_args()
 
     if args.config:
@@ -49,9 +51,9 @@ def main():
     include_dynamic_builds = getattr(config, "include_dynamic_flaws", True)
     include_sandboxes = getattr(config, "include_sandboxes", True)
     include_csv_headers = getattr(config, "include_csv_headers", True)
-    output_directory = getattr(config, "output_directory", "output")
+    output_directory = args.outputdir if args.outputdir else getattr(config, "output_directory", "output")
     proxies = getattr(config, "proxies", None)
-    debug_logging = getattr(config, "debug_logging", False)
+    debug_logging = args.debug if args.debug else getattr(config, "debug_logging", False)
 
     log.setup_logging(debug_logging)
 
@@ -143,7 +145,7 @@ def main():
                     except VeracodeError:
                         logging.exception("Failed to process build")
 
-    print("Processed {} builds".format(builds_processed))
+    print("Processed {} new/updated builds".format(builds_processed))
 
 
 def run():

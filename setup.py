@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="veracodetocsv",
-    version="2018.10.3",
+    version="2019.2.0",
     packages=find_packages(),
     license="MIT",
     author="ctcampbell",
