@@ -10,9 +10,9 @@ setup(
     author_email="chris@ctcampbell.com",
     description="Outputs one CSV file per scan per application profile visible in a Veracode platform account",
     install_requires=[
-        "requests >= 2.18.4",
-        "pytz >= 2018.4",
-        "python-dateutil >= 2.7.3"
+        "requests ~= 2.20.0",
+        "pytz ~= 2018.4",
+        "python-dateutil ~= 2.7.3"
     ],
     entry_points={
         "console_scripts": ["veracodetocsv = veracodetocsv.veracodetocsv:run"]
