@@ -1,6 +1,11 @@
 import os
 import time
-import configparser
+try:
+    # py3
+    import configparser
+except ImportError:
+    # py2
+    import ConfigParser as configparser
 from hashlib import sha256
 import hmac
 import codecs

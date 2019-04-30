@@ -7,7 +7,6 @@ from datetime import datetime
 
 def setup_logging(debug=False):
     now = datetime.utcnow().strftime("%Y-%m-%d-%H%M%S")
-    logging_filename = now + ".log"
     format_string = "%(asctime)s %(levelname)s %(message)s"
     datetime_format = '%Y-%m-%d %H:%M:%S %Z'
 
@@ -15,8 +14,8 @@ def setup_logging(debug=False):
     logging.Formatter.converter = time.gmtime
 
     if debug:
-        logging.basicConfig(format=format_string, datefmt=datetime_format, filename=logging_filename, level=logging.DEBUG)
+        logging.basicConfig(format=format_string, datefmt=datetime_format, filename="{}-debug.log".format(now), level=logging.DEBUG)
     else:
-        logging.basicConfig(format=format_string, datefmt=datetime_format, filename=logging_filename, level=logging.INFO)
+        logging.basicConfig(format=format_string, datefmt=datetime_format, filename="{}.log".format(now), level=logging.INFO)
         requests_logger = logging.getLogger("requests")
         requests_logger.setLevel(logging.WARNING)

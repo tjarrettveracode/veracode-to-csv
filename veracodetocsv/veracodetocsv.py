@@ -34,6 +34,7 @@ def main():
         description="Outputs one CSV file per scan per application profile visible in a Veracode platform account")
     parser.add_argument("-c", "--config", help="Configuration file")
     parser.add_argument("-o", "--outputdir", help="Output directory")
+    parser.add_argument("-a", "--appincludelist", help="Text file containing list of application profile names to include")
     parser.add_argument("-d", "--debug", help="Enable debug logging", action="store_true")
     args = parser.parse_args()
 
@@ -80,9 +81,10 @@ def main():
     veracode_api = api.VeracodeAPI(proxies=proxies)
     data_loader = DataLoader(veracode_api, build_tools)
 
-    if hasattr(config, "app_include_list"):
+    app_include_list_file = args.appincludelist if args.appincludelist else getattr(config, "app_include_list", None)
+    if app_include_list_file:
         try:
-            with codecs.open(config.app_include_list, "r", "utf-8") as f:
+            with codecs.open(app_include_list_file, "r", "utf-8") as f:
                 app_include_list = f.read().splitlines()
         except (IOError, UnicodeDecodeError):
             logging.exception("Error opening app include list file")
@@ -90,6 +92,9 @@ def main():
             sys.exit(2)
     else:
         app_include_list = []
+
+    if len(app_include_list) > 0:
+        print("{} applications in app include list".format(len(app_include_list)))
 
     try:
         data = data_loader.get_data(include_static_builds, include_dynamic_builds, app_include_list,
@@ -121,8 +126,6 @@ def main():
         unicodecsv.create_csv(flaw_rows, filepath)
         build_tools.update_and_save_processed_builds_file(app.id, build.id, build.policy_updated_date)
 
-    builds_processed = 0
-
     logging.log(logging.INFO, "Writing CSV files")
     print("Writing CSV files")
 
@@ -131,7 +134,6 @@ def main():
         for build in app.builds:
             try:
                 process_build(app, build)
-                builds_processed += 1
             except VeracodeError:
                 logging.exception("Failed to process build")
 
@@ -141,11 +143,8 @@ def main():
                 for build in sandbox.builds:
                     try:
                         process_build(app, build, sandbox)
-                        builds_processed += 1
                     except VeracodeError:
                         logging.exception("Failed to process build")
-
-    print("Processed {} new/updated builds".format(builds_processed))
 
 
 def run():

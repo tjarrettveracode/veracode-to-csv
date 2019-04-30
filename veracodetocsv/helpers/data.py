@@ -1,4 +1,5 @@
 # Purpose:  Convert Veracode XML elements to Python objects.
+from __future__ import print_function
 
 import sys
 import xml.etree.ElementTree as ETree
@@ -163,11 +164,15 @@ class DataLoader:
         if app_include_list:
             apps = [app for app in apps if app.name in app_include_list]
 
+        print("{} applications found in Veracode account".format(len(apps)))
+
         for app in apps:
             app_info = self._get_app_info(app.id)
             app.business_unit = app_info["business_unit"]
             builds = self._get_builds(app.id, include_static_builds, include_dynamic_builds)
             app.builds = [build for build in builds if self.build_tools.build_should_be_processed(app.id, build.id, build.policy_updated_date)]
+
+            print(u"{}: {} policy builds".format(app.name, len(app.builds)))
 
             for build in app.builds:
                 analysis_unit_attrib = self._get_build_info(app.id, build.id).find("analysis_unit").attrib
@@ -181,6 +186,9 @@ class DataLoader:
 
             if include_sandboxes:
                 app.sandboxes = self._get_sandboxes(app.id)
+
+                print(u"{}: {} sandboxes".format(app.name, len(app.sandboxes)))
+
                 for sandbox in app.sandboxes:
                     builds = self._get_builds(app.id, include_static_builds, include_dynamic_builds, sandbox.id)
                     sandbox.builds = [build for build in builds if self.build_tools.build_should_be_processed(app.id, build.id, build.policy_updated_date)]
