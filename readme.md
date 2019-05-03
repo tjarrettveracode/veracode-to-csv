@@ -20,7 +20,7 @@ File permissions should be set appropriately
 
 # Configure
 
-An example configuration file is provided `config-example.py` which can be passed on the command line using `-c`. Defaults are as shown:
+An example configuration file is provided `config_example.py` which can be passed on the command line using `-c`. Defaults are as shown:
 
     # Logging
     # debug_logging = True
