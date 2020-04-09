@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="veracodetocsv",
-    version="2019.4.2",
+    version="2020.4.0",
     packages=find_packages(),
     license="MIT",
     author="ctcampbell",
@@ -10,9 +10,10 @@ setup(
     author_email="chris@ctcampbell.com",
     description="Outputs one CSV file per scan per application profile visible in a Veracode platform account",
     install_requires=[
-        "requests >= 2.20.0",
+        "requests >= 2.20.0, < 3.0",
         "pytz >= 2018.4",
-        "python-dateutil >= 2.7.3"
+        "python-dateutil >= 2.7.3",
+        "veracode-api-signing >= 19.9.0"
     ],
     entry_points={
         "console_scripts": ["veracodetocsv = veracodetocsv.veracodetocsv:run"]
