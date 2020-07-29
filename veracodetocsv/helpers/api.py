@@ -30,7 +30,7 @@ class VeracodeAPI:
     def _get_request(self, url, params=None):
         try:
             r = requests.get(url, params=params, auth=RequestsAuthPluginVeracodeHMAC(), proxies=self.proxies)
-            if 200 >= r.status_code <= 299:
+            if 200 <= r.status_code <= 299:
                 if r.content is None:
                     logging.debug("HTTP response body empty:\r\n{}\r\n{}\r\n{}\r\n\r\n{}\r\n{}\r\n{}\r\n"
                                   .format(r.request.url, r.request.headers, r.request.body, r.status_code, r.headers, r.content))
