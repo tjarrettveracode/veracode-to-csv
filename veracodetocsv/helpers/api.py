@@ -16,9 +16,9 @@ except ImportError:
 import requests
 import logging
 from requests.adapters import HTTPAdapter
-
+from veracode_api_signing.exceptions import VeracodeAPISigningException
+from veracode_api_signing.plugin_requests import RequestsAuthPluginVeracodeHMAC
 from .exceptions import VeracodeAPIError
-from .api_hmac import generate_veracode_hmac_header, VeracodeHMACError
 
 
 class VeracodeAPI:
@@ -29,17 +29,7 @@ class VeracodeAPI:
 
     def _get_request(self, url, params=None):
         try:
-            session = requests.Session()
-            session.mount(self.baseurl, HTTPAdapter(max_retries=3))
-            request = requests.Request("GET", url, params=params)
-            prepared_request = request.prepare()
-            try:
-                prepared_request.headers["Authorization"] = generate_veracode_hmac_header(urlparse(url).hostname,
-                                                                                          prepared_request.path_url,
-                                                                                          "GET")
-            except VeracodeHMACError:
-                raise VeracodeAPIError("Could not generate API HMAC header")
-            r = session.send(prepared_request, proxies=self.proxies)
+            r = requests.get(url, params=params, auth=RequestsAuthPluginVeracodeHMAC(), proxies=self.proxies)
             if 200 >= r.status_code <= 299:
                 if r.content is None:
                     logging.debug("HTTP response body empty:\r\n{}\r\n{}\r\n{}\r\n\r\n{}\r\n{}\r\n{}\r\n"
